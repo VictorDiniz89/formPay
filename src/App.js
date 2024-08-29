@@ -1,25 +1,23 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import './App.css'
+import Formulario from "./form";
+import './payments/assets/style.css'
+//import CardForm from "./payments/components/CardForm";
+ 
 
-function App() {
+function App(){
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    <div className="app">
+      <div className="image-container">
+      <img src={`${process.env.PUBLIC_URL}/woman.jpg`} alt="Mulher Orando" className="praying-image" />
+    </div>
+      <h1>Conferência de Mulheres 2024</h1>
+      <header className="form-container">   
+        <Formulario/>
+        {/* <CardForm/> */}
       </header>
     </div>
-  );
+  )
 }
 
 export default App;
