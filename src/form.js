@@ -2,6 +2,7 @@
 import React, {useState} from 'react'
 import CardForm from './payments/components/CardForm'
 
+
 const Formulario = () => {
     const [formData, setFormData] = useState({
         nome: '',
@@ -19,7 +20,9 @@ const handeChange = (e) => {
 const handleSubmit = (e) => {
     e.preventDefault()
     console.log(formData)
+    window.location.reload()
 }
+
 
 return(
     <form onSubmit={handleSubmit}>
