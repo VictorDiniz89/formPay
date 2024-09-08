@@ -1,0 +1,79 @@
+const MercadoPago = require('mercadopago');
+const { checkout } = require('../routes/routes');
+
+const  getFullUrl = (req) =>{
+    const url = req.protocol + '://' + req.get('host')
+    console.log(url)
+    return url
+}
+
+
+module.exports = {
+    async checkout(req, res){
+        console.log(process.env)
+
+        // Step 2: Initialize the client object
+        const client = new MercadoPago.MercadoPagoConfig({ 
+            accessToken: process.env.MP_ACCESS_TOKEN_TEST, 
+            options: { timeout: 5000, idempotencyKey: 'abc' } 
+        });
+
+        // Step 3: Initialize the API object
+        const payment = new MercadoPago.Payment(client);
+
+        //MercadoPago.configurations.setAccessToken(process.env.MP_ACCESS_TOKEN)
+
+        const {id, email, description, amount} = req.params
+
+        //Create purchase item object  template
+        const purchaseOrder = {
+            items: [
+                item = {
+                    id: id,
+                    title: description,
+                    quantity: 1,
+                    currency_id: 'BRL',
+                    unit_price: parseFloat(amount)
+                }
+            ],
+            payer: {
+                email: email
+            },
+            auto_return : 'all',
+            external_reference: id,
+            back_urls : {
+                success : getFullUrl(req) + "/payments/success",
+                pending : getFullUrl(req) + "/payments/pending",
+                failure : getFullUrl(req) + "/payments/failure",
+            }
+        }
+
+        //generate init_point to checkout
+        // try {
+        //     const preference = await MercadoPago.preferences.create(purchaseOrder)
+        //     return res.redirect(`${preference.body.init_point}`)
+        // } catch (error) {
+        //     return res.send(err.message)
+        // }
+
+        const body = {
+            transaction_amount: 0.50,
+            description: 'pAGAMENTO DE TESTE',
+            payment_method_id: 'pix',
+            payer: {
+                email: email
+            },
+        };
+
+        const requestOptions = {
+            idempotencyKey: 'BBBBBBBBBBBBBBBB',
+        };
+
+        payment.create({ body, requestOptions }).then(result => {
+            console.log(result.point_of_interaction.transaction_data.qr_code_base64)
+            console.log(result.point_of_interaction.transaction_data.qr_code)
+            res.json() //escutar a api
+
+        }).catch(console.log);
+    }
+}

@@ -6,7 +6,7 @@ import axios from 'axios';
 
 const createContact = async (formData) => {
     try {
-        const res = await axios.post('http://127.0.0.1:8000/api/contatos', formData, {
+        const res = await axios.post('http://localhost:4000/pessoa', formData, {
             headers: {
                 'Content-Type': 'application/json'
             }
