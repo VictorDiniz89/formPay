@@ -1,22 +1,23 @@
 import React from "react";
 import './App.css'
-import Formulario from "./form";
-import './payments/assets/style.css'
-//import CardForm from "./payments/components/CardForm";
- 
 
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import Home from "./pages/home";
+import StatusPage from "./pages/status";
+import SucessoPage from "./pages/sucesso/status";
+ 
 function App(){
   return (
-    <div className="app">
-      <div className="image-container">
-      <img src={`${process.env.PUBLIC_URL}/config.jpg`} alt="Mulher Orando" className="praying-image" />
-    </div>
-      <h1>Conferência de Mulheres 2024</h1>
-      <header className="form-container">   
-        <Formulario/>
-        {/* <CardForm/> */}
-      </header>
-    </div>
+    <Router>
+      
+        <Routes>
+          <Route path="/" element={<Home/>}/>
+          <Route path="/status" element={<StatusPage/>}/>
+          <Route path="/sucesso" element={<SucessoPage/>}/>
+        </Routes>
+        
+      </Router>
+    
   )
 }
 

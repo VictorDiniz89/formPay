@@ -1,79 +1,64 @@
 const MercadoPago = require('mercadopago');
-const { checkout } = require('../routes/routes');
-
-const  getFullUrl = (req) =>{
-    const url = req.protocol + '://' + req.get('host')
-    console.log(url)
-    return url
-}
-
+const { criaPagamento } = require('../service/payment');
+const database = require('../database/connection')
+const {getValorLote} = require("../service/lotePagamento")
 
 module.exports = {
-    async checkout(req, res){
-        console.log(process.env)
+    async statusPagamento(req, res){
+        
+        const {clientId} = req.params
 
-        // Step 2: Initialize the client object
-        const client = new MercadoPago.MercadoPagoConfig({ 
-            accessToken: process.env.MP_ACCESS_TOKEN_TEST, 
-            options: { timeout: 5000, idempotencyKey: 'abc' } 
-        });
+        const [pessoa] = await database.select('*').table('pessoa').where('clientId', clientId)
+        console.log(pessoa)
+        try {
+            const pagamentoData =  await criaPagamento(pessoa.email, pessoa.paymentId, getValorLote())
 
-        // Step 3: Initialize the API object
-        const payment = new MercadoPago.Payment(client);
+           const response = {
+            clientId,
+            pid: pessoa.paymentId,
+            pixCopiaCola: pagamentoData?.point_of_interaction?.transaction_data.qr_code || 'error_reading_pix',
+            status: pagamentoData.status || 'pending'
+           }
 
-        //MercadoPago.configurations.setAccessToken(process.env.MP_ACCESS_TOKEN)
+           if (pagamentoData.status === 'approved' && pessoa.status === 'pending') {
+            await database.update({status: 'approved'}).table('pessoa').where('id', pessoa.id)
+           }
 
-        const {id, email, description, amount} = req.params
+           return res.status(200).json(response)
 
-        //Create purchase item object  template
-        const purchaseOrder = {
-            items: [
-                item = {
-                    id: id,
-                    title: description,
-                    quantity: 1,
-                    currency_id: 'BRL',
-                    unit_price: parseFloat(amount)
-                }
-            ],
-            payer: {
-                email: email
-            },
-            auto_return : 'all',
-            external_reference: id,
-            back_urls : {
-                success : getFullUrl(req) + "/payments/success",
-                pending : getFullUrl(req) + "/payments/pending",
-                failure : getFullUrl(req) + "/payments/failure",
-            }
+        } catch (error) {
+            console.error(error)
+            res.status(400).json({error: 'Erro ao processar pagamento'})
         }
+        
+    },
 
-        //generate init_point to checkout
-        // try {
-        //     const preference = await MercadoPago.preferences.create(purchaseOrder)
-        //     return res.redirect(`${preference.body.init_point}`)
-        // } catch (error) {
-        //     return res.send(err.message)
-        // }
+    async recriaPagamento(req, res){
+        
+        const {clientId} = req.params
 
-        const body = {
-            transaction_amount: 0.50,
-            description: 'pAGAMENTO DE TESTE',
-            payment_method_id: 'pix',
-            payer: {
-                email: email
-            },
-        };
+        const [pessoa] = await database.select('*').table('pessoa').where('clientId', clientId)
+        const paymentId = randonUUID()
 
-        const requestOptions = {
-            idempotencyKey: 'BBBBBBBBBBBBBBBB',
-        };
+        await database.update({paymentId}).table('pessoa').where('id', pessoa.id)
 
-        payment.create({ body, requestOptions }).then(result => {
-            console.log(result.point_of_interaction.transaction_data.qr_code_base64)
-            console.log(result.point_of_interaction.transaction_data.qr_code)
-            res.json() //escutar a api
 
-        }).catch(console.log);
+        try {
+            const pagamentoData =  await criaPagamento(pessoa.email, paymentId, getValorLote())
+
+           const response = {
+            clientId,
+            pid: paymentId,
+            pixCopiaCola: pagamentoData?.point_of_interaction?.transaction_data.qr_code || 'error_reading_pix',
+            status: pagamentoData.status || 'pending'
+           }
+
+           return res.status(200).json(response)
+
+        } catch (error) {
+            console.error(error)
+            res.status(400).json({error: 'Erro ao processar pagamento'})
+        }
     }
 }
+

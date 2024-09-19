@@ -1,17 +1,19 @@
 
-import React, {useState} from 'react'
-//import CardForm from './payments/components/CardForm'
+import React, {useEffect, useState} from 'react'
+import { json, useNavigate } from 'react-router-dom'
 import axios from 'axios';
 
 
 const createContact = async (formData) => {
     try {
-        const res = await axios.post('http://localhost:4000/pessoa', formData, {
+        const res = await axios.post('http://www.iderptx.com.br/insc-api/pessoa', formData, {
             headers: {
                 'Content-Type': 'application/json'
             }
         });
         console.log(res.data);
+        localStorage.setItem('client', JSON.stringify(res.data) )
+    
     } catch (error) {
         console.error('Error:', error);
     }
@@ -25,6 +27,19 @@ const Formulario = () => {
         cidade: '',
         igreja: ''
     })
+
+const [isFormValid, setIsFormValid] = useState(false)    
+const navigate = useNavigate()
+
+const validForm = () => {
+    const {nome, email, telefone, cidade, igreja} = formData;
+    return nome && email && telefone && cidade && igreja 
+}
+
+useEffect(() =>{
+    setIsFormValid(validForm())
+}, [formData]);
+
 const handeChange = (e) => {
     const {name, value} = e.target
     setFormData({
@@ -36,8 +51,7 @@ const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(formData);
     await createContact(formData);
-    
-    window.location.reload()
+    navigate('/status')
 };
 
 return(
@@ -63,10 +77,8 @@ return(
                 <input type="igreja" name="igreja" value={formData.igreja} onChange={handeChange}/>
             </div>
             <div className="button-container">
-            <button type="submit">Inscrever-se</button>
+            <button type="submit" disabled={!isFormValid}>Inscrever-se</button>
             </div>
-            {/* <CardForm/> */}
-            {/* <button className="card-form__button">Enviar</button> */}
             </form>
 )
 }
