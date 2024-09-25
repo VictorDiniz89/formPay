@@ -6,7 +6,8 @@ import './status.css'
 
 const getPaymentStatus = async (clientId) => {
     try {
-        const res = await axios.get(`http://localhost:3333/api/payment/status/${clientId}`, {
+      const server = 'https://oval-inquiry-411619.wl.r.appspot.com'  
+      const res = await axios.get(`${server}/api/payment/status/${clientId}`, {
             headers: {
                 'Content-Type': 'application/json'
             }

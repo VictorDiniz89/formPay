@@ -1,9 +1,11 @@
 const MercadoPago = require('mercadopago');
 
+const MP_ACCESS_TOKEN=`APP_USR-2499923879849179-091109-37884fd325d83e23b91f2dafbc2240c4-1823829570`
+
 async function criaPagamento(clientEmail, paymentId, amount) {
   // Step 2: Initialize the client object
   const client = new MercadoPago.MercadoPagoConfig({ 
-    accessToken: process.env.MP_ACCESS_TOKEN, 
+    accessToken: MP_ACCESS_TOKEN, 
     options: { timeout: 5000, idempotencyKey: paymentId } 
     });
 

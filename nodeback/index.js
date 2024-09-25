@@ -2,16 +2,18 @@ const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
 
-require('./src/config/getEnv')();
+//require('./src/config/getEnv')();
 
 const knex =  require('./src/database/connection')
 const router = require('./src/routes/routes')
+
+
 
 //Routes
 const paymentsRoutes = require('./src/routes/paymentsRoutes')
 
 //Load environment
-require('./src/config/getEnv')
+//require('./src/config/getEnv')
 const app = express()
 
 app.use(cors())
@@ -24,12 +26,14 @@ app.use('/api', paymentsRoutes)
 app.use(express.json())
 app.use(router)
 
-app.listen(process.env.API_PORT, function(err){
+const port = process.env.PORT;
+
+app.listen(port, function(err){
     if(err){ 
         console.error(err)
         return
     }
-    console.log(`Servidor rodando na porta ${process.env.API_PORT}`)
+    console.log(`Servidor rodando na porta ${port}`)
 })
 
 app.get('/api/cadastros', (req, res)=>{

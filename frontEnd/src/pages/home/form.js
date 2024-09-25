@@ -6,7 +6,8 @@ import axios from 'axios';
 
 const createContact = async (formData) => {
     try {
-        const res = await axios.post('http://www.iderptx.com.br/insc-api/pessoa', formData, {
+        const server = 'https://oval-inquiry-411619.wl.r.appspot.com'
+        const res = await axios.post(server + '/pessoa', formData, {
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -51,7 +52,7 @@ const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(formData);
     await createContact(formData);
-    navigate('/status')
+    navigate('/inscricao/status')
 };
 
 return(
