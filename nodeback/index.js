@@ -26,7 +26,7 @@ app.use('/api', paymentsRoutes)
 app.use(express.json())
 app.use(router)
 
-const port = process.env.PORT;
+const port = process.env.PORT || 3333;
 
 app.listen(port, function(err){
     if(err){ 

@@ -1,9 +1,9 @@
 
 
 function getValorLote() {
-    const lote1DataLimite = new Date('20024-09-26')
-    const lote2DataLimite = new Date('20024-10-11')
-    const lote3DataLimite = new Date('20024-10-18')
+    const lote1DataLimite = new Date('2024-09-26')
+    const lote2DataLimite = new Date('2024-10-11')
+    const lote3DataLimite = new Date('2024-10-18')
 
     const valorLote1 = 30.00
     const valorLote2 = 35.00
